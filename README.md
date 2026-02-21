@@ -19,3 +19,15 @@ Function ~ Description
   - void os_free(void *ptr) ~ Frees a previously allocated block
   - void *os_calloc(size_t nmemb, size_t size) ~ Allocates and zero-initializes memory for an array
   - void *os_realloc(void *ptr, size_t size) ~ Resizes a previously allocated block
+
+Usage
+
+#include "osmem.h"
+int main() {
+    int *arr = os_malloc(10 * sizeof(int));
+    for (int i = 0; i < 10; i++)
+        arr[i] = i;
+    arr = os_realloc(arr, 20 * sizeof(int));
+    os_free(arr);
+    return 0;
+}
