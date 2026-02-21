@@ -13,22 +13,16 @@
 	#define minimal_block_use 40
 	#define padded_struct 32
 	//32 e structul padded plus oricat de mic as aloca memorie inseamna +8
-
 	//4096 threshold pentru calloc
 
 	struct block_meta *global_head; //pointer global la inceputul listei
 	int bool_prealloc = 1;
 
 	//ca sa fac split am nevoie de cel putin 40 bytes of free memory
-
-
 	//itereaza prin lista pana gaseste un block liber suficient de mare pt a aloca memoria
-	//trebuie facut BEST SIZE
-
 	struct block_meta *get_free_block(size_t size)
 	{
 		struct block_meta *current = global_head; //pointer la global_head
-
 		size_t min_diff = INT_MAX;
 		struct block_meta *ptr = NULL;
 
@@ -62,7 +56,6 @@
 	void *coalesce_blocks(struct block_meta *block)
 	{
 		struct block_meta *current = block;
-
 		if (current != NULL && current->next != NULL) {
 			while (current != NULL && current->next != NULL) {
 				if (current->status == 0 && current->next->status == 0) {
@@ -84,8 +77,6 @@
 
 	void *os_malloc(size_t size)
 	{
-		/* TODO: Implement os_malloc */
-
 		coalesce_blocks(global_head);
 
 		if (size <= 0)
@@ -100,7 +91,6 @@
 
 		if (bool_prealloc == 1 && size + padded_struct <= threshold) {
 			struct block_meta *block_prealloc;
-
 			block_prealloc = sbrk(threshold);
 
 			if (block_prealloc == NULL)
@@ -111,7 +101,6 @@
 			global_head->prev = NULL;
 			global_head->status = 1;
 			global_head->size = threshold - padded_struct;
-
 			bool_prealloc = 0;
 
 			return (void *)(global_head+1);
@@ -215,10 +204,6 @@
 
 	void *os_malloc_2(size_t size)
 	{
-		/* TODO: Implement os_malloc */
-
-		//coalesce_blocks(global_head);
-
 		if (size <= 0)
 			return NULL;
 
@@ -247,9 +232,6 @@
 
 			return (void *)(global_head+1);
 		}
-
-		//coalesce_blocks(global_head);
-
 		struct block_meta *for_use = get_free_block(size + padded_struct);
 
 		if (for_use != NULL) {
@@ -348,10 +330,8 @@
 	}
 
 
-	//mmap are status = 2
 	void os_free(void *ptr)
 	{
-		/* TODO: Implement os_free */
 
 		struct block_meta *block;
 
@@ -379,7 +359,6 @@
 
 	void *os_calloc(size_t nmemb, size_t size)
 	{
-		/* TODO: Implement os_calloc */
 
 		if (size == 0 || nmemb == 0)
 			return NULL;
@@ -399,18 +378,12 @@
 	//foarte important se da coalesce pe rand si intotdeauna verific daca size-ul meu are loc in noul free
 	//se da coalesce la block-urile care sunt free cu 1 chiar daca intre ele se afla mmapuri
 	//in cazul in care dau realloc la ceva ce a fost alocat cu mmap intai dau unmap apoi aloc noua dimensiune
-	//pointerul 0 ca prim argument inseamna malloc
-	//in dreapta la ref am adresa de unde incepe alocarea
 
 	//cazuri pentru pointer diferit de NULL : [expand final], [merge-uri repetitive], sau daca nu se poate
 	//niciuna daca e mai mic size-ul de realocat trebuie sa vad daca dau split SAU daca size-ul e mai mare aloc cu
 	//malloc la final sizeul mai mare apoi cu memcpy mut blockul de realocat la final apoi dau free la cel din mijloc
-	//oriocum verific free-urile de dupa ptr si daca se gaseste free de la globalhead pune si chiar in stanga ptr
-	//alocat cu mmap se da free apoi se da alloc cu mmap
-	//realloc in place
 	void *os_realloc(void *ptr, size_t size)
 	{
-		/* TODO: Implement os_realloc */
 
 		if (!ptr)
 			return os_malloc(size);
